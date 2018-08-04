@@ -8,11 +8,14 @@ public class BuildMenu : MonoBehaviour {
 
     public GameObject menuButton;
     public GameObject panel;
+    public GameObject canvas;
 
     private static string sceneName = "MainMenu";
     private List<GameObject> buttons = new List<GameObject>();
     private const float btnBuffer = 0.60f;
     private const int mainMenuButtonCount = 4;
+    private GameObject canvasMain;
+    private GameObject panelMain;
 
     private enum MenuEnums
     {
@@ -59,9 +62,17 @@ public class BuildMenu : MonoBehaviour {
         
     }
 
+    public void LoadCanvasPanel()
+    {
+        canvasMain = Instantiate(canvas);
+        panelMain = Instantiate(panel);
+        panelMain.transform.parent = canvasMain.transform;
+    }
+
     public void MainMenuLoad()
     {
-        RectTransform panelRect = panel.GetComponent<RectTransform>();
+        LoadCanvasPanel();
+        RectTransform panelRect = panelMain.GetComponent<RectTransform>();
         RectTransform btnRect = menuButton.GetComponent<RectTransform>();
         float diffWidth = Screen.width / 2.0f - btnRect.rect.width * btnBuffer;
         float diffHeight = Screen.height / 2.0f - btnRect.rect.height * btnBuffer * mainMenuButtonCount;
@@ -71,18 +82,18 @@ public class BuildMenu : MonoBehaviour {
 
         Vector3 btnPosition = new Vector3
         {
-            x = panel.transform.position.x,
-            y = panel.transform.position.y + mainMenuButtonCount / 2.0f * btnRect.rect.height - btnRect.rect.height / 2.0f,
-            z = panel.transform.position.z
+            x = panelMain.transform.position.x,
+            y = panelMain.transform.position.y + mainMenuButtonCount / 2.0f * btnRect.rect.height - btnRect.rect.height / 2.0f,
+            z = panelMain.transform.position.z
         };
 
         // Offset function y movement
         btnPosition.y += menuButton.GetComponent<RectTransform>().rect.height;
 
-        InstantiateAdjustObj(menuButton, "New Game", ref btnPosition, panel);
-        InstantiateAdjustObj(menuButton, "Load", ref btnPosition, panel);
-        InstantiateAdjustObj(menuButton, "Options", ref btnPosition, panel);
-        InstantiateAdjustObj(menuButton, "Quit", ref btnPosition, panel);
+        InstantiateAdjustObj(menuButton, "New Game", ref btnPosition, panelMain);
+        InstantiateAdjustObj(menuButton, "Load", ref btnPosition, panelMain);
+        InstantiateAdjustObj(menuButton, "Options", ref btnPosition, panelMain);
+        InstantiateAdjustObj(menuButton, "Quit", ref btnPosition, panelMain);
     }
     
 
