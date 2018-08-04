@@ -11,11 +11,13 @@ public class BuildMenu : MonoBehaviour {
     public GameObject canvas;
 
     private static string sceneName = "MainMenu";
-    private List<GameObject> buttons = new List<GameObject>();
-    private const float btnBuffer = 0.60f;
-    private const int mainMenuButtonCount = 4;
+    private List<GameObject> buttons = new List<GameObject>();    
     private GameObject canvasMain;
     private GameObject panelMain;
+
+    private const float btnBuffer = 0.60f;
+    private const int mainMenuButtonCount = 4;
+    private const int optionsMenuButtonCount = 4;
 
     private enum MenuEnums
     {
@@ -55,6 +57,7 @@ public class BuildMenu : MonoBehaviour {
                 MainMenuLoad();
                 break;
             case MenuEnums.OPTIONSMENU:
+                OptionsMenuLoad();
                 break;
             default:
                 break;
@@ -71,7 +74,7 @@ public class BuildMenu : MonoBehaviour {
         Destroy(panelMain);
         canvasMain = Instantiate(canvas);
         panelMain = Instantiate(panel);
-        panelMain.transform.parent = canvasMain.transform;
+        panelMain.transform.SetParent(canvasMain.transform);
     }
 
 
@@ -99,11 +102,104 @@ public class BuildMenu : MonoBehaviour {
         // Offset function y movement
         btnPosition.y += menuButton.GetComponent<RectTransform>().rect.height;
 
-        InstantiateAdjustObj(menuButton, "New Game", ref btnPosition, panelMain);
-        InstantiateAdjustObj(menuButton, "Load", ref btnPosition, panelMain);
-        InstantiateAdjustObj(menuButton, "Options", ref btnPosition, panelMain);
-        InstantiateAdjustObj(menuButton, "Quit", ref btnPosition, panelMain);
+        buttons.Clear();
+        buttons.Add(InstantiateAdjustObj(menuButton, "New Game", ref btnPosition, "main", panelMain));
+        buttons.Add(InstantiateAdjustObj(menuButton, "Load", ref btnPosition, "main", panelMain));
+        buttons.Add(InstantiateAdjustObj(menuButton, "Options", ref btnPosition, "main", panelMain));
+        buttons.Add(InstantiateAdjustObj(menuButton, "Quit", ref btnPosition, "main", panelMain));
     }
+
+
+    /// <summary>
+    /// Handles all menu clicks for this menu.
+    /// </summary>
+    /// <param name="obj">The object that requires an interaction</param>
+    private void HandleMainMenuClicks(GameObject obj)
+    {
+        switch (obj.name)
+        {
+            case "New Game":
+                Debug.Log("GOT New Game!");
+                break;
+            case "Load":
+                Debug.Log("GOT Load!");
+                break;
+            case "Options":
+                Debug.Log("GOT Options!");
+                OptionsMenuLoad();
+                break;
+            case "Quit":
+                Debug.Log("GOT Quit!");
+#if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+#else
+                Application.Quit();
+#endif
+                break;
+            default:
+                break;
+        }
+    }
+
+
+    /// <summary>
+    /// Handles all menu clicks for this menu.
+    /// </summary>
+    /// <param name="obj">The object that requires an interaction</param>
+    private void HandleOptionsMenuClicks(GameObject obj)
+    {
+        switch (obj.name)
+        {
+            case "Master Volume":
+                Debug.Log("GOT Master Volume!");
+                break;
+            case "SFX Volume":
+                Debug.Log("GOT SFX Volume!");
+                break;
+            case "Music Volume":
+                OptionsMenuLoad();
+                Debug.Log("GOT Music Volume!");
+                break;
+            case "Back":
+                Debug.Log("GOT Back!");
+                MainMenuLoad();
+                break;
+            default:
+                break;
+        }
+    }
+
+
+    /// <summary>
+    /// Loads the Options Menu and associated buttons.
+    /// </summary>
+    public void OptionsMenuLoad()
+    {
+        LoadCanvasPanel();
+        RectTransform panelRect = panelMain.GetComponent<RectTransform>();
+        RectTransform btnRect = menuButton.GetComponent<RectTransform>();
+        float diffWidth = Screen.width / 2.0f - btnRect.rect.width * btnBuffer;
+        float diffHeight = Screen.height / 2.0f - btnRect.rect.height * btnBuffer * optionsMenuButtonCount;
+
+        panelRect.offsetMin = new Vector2(diffWidth, diffHeight);
+        panelRect.offsetMax = new Vector2(-diffWidth, -diffHeight);
+
+        Vector3 btnPosition = new Vector3
+        {
+            x = panelMain.transform.position.x,
+            y = panelMain.transform.position.y + optionsMenuButtonCount / 2.0f * btnRect.rect.height - btnRect.rect.height / 2.0f,
+            z = panelMain.transform.position.z
+        };
+
+        // Offset function y movement
+        btnPosition.y += menuButton.GetComponent<RectTransform>().rect.height;
+
+        InstantiateAdjustObj(menuButton, "Master Volume", ref btnPosition, "options", panelMain);
+        InstantiateAdjustObj(menuButton, "SFX Volume", ref btnPosition, "options", panelMain);
+        InstantiateAdjustObj(menuButton, "Music Volume", ref btnPosition, "options", panelMain);
+        InstantiateAdjustObj(menuButton, "Back", ref btnPosition, "options", panelMain);
+    }
+
 
     /// <summary>
     /// Used for instantiating and offsetting an Object.
@@ -113,15 +209,31 @@ public class BuildMenu : MonoBehaviour {
     /// <param name="vec">Reference to offset vector</param>
     /// <param name="Parent">The parent of the created GameObject</param>
     /// <returns>The created GameObject</returns>
-    private GameObject InstantiateAdjustObj(GameObject Obj, string DisplayText, ref Vector3 vec, GameObject Parent = null)
+    private GameObject InstantiateAdjustObj(GameObject Obj, string DisplayText, ref Vector3 vec, string MenuName = "", GameObject Parent = null)
     {
         GameObject obj = Instantiate(Obj) as GameObject;
         obj.GetComponentInChildren<Text>().text = DisplayText;
-        obj.transform.parent = Parent.transform;
+        obj.name = DisplayText;
+        obj.transform.SetParent(Parent.transform);
         vec.y -= obj.GetComponent<RectTransform>().rect.height;
         obj.transform.position = vec;
+
+        Button btn = obj.GetComponent<Button>();
+        if (btn != null)
+        {
+            // TODO: These should be enums?
+            if (MenuName == "main")
+            {
+                btn.onClick.AddListener(delegate { HandleMainMenuClicks(obj); });
+            }
+            else if (MenuName == "options")
+            {
+                btn.onClick.AddListener(delegate { HandleOptionsMenuClicks(obj); });                
+            }
+        }
+
         return obj;
     }
-
+    
 
 }
