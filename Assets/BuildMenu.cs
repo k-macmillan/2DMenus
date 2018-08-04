@@ -19,7 +19,21 @@ public class BuildMenu : MonoBehaviour {
     private const int mainMenuButtonCount = 4;
     private const int optionsMenuButtonCount = 4;
 
-    private enum MenuEnums
+    // Main Menu
+    private const string NewGame = "New Game";
+    private const string LoadGame = "Load";
+    private const string OptionsMenu = "Options";
+    private const string QuitGame = "Quit";
+
+    // Options Menu
+    private const string MasterVolume = "Master Volume";
+    private const string SFXVolume = "Sound Effects Volume";
+    private const string MusicVolume = "Music Volume";
+
+    // Common Menu
+    private const string Back = "Back";
+
+    public enum MenuState
     {
         MAINMENU,
         PAUSEMENU,
@@ -28,11 +42,19 @@ public class BuildMenu : MonoBehaviour {
         SAVE,
     }
 
+    public enum MenuType
+    {
+        MAIN,
+        OPTIONS,
+        SAVE,
+        LOAD,
+    }
+
     private void Awake()
     {
         if (SceneManager.GetActiveScene().name == "MainMenu")
         {
-            LoadMenu(MenuEnums.MAINMENU);
+            LoadMenu(MenuState.MAINMENU);
         }
     }
 
@@ -47,16 +69,16 @@ public class BuildMenu : MonoBehaviour {
 	}
 
 
-    private void LoadMenu(MenuEnums menuState)
+    private void LoadMenu(MenuState menuState)
     {
         buttons.Clear();
 
         switch (menuState)
         {
-            case MenuEnums.MAINMENU:
+            case MenuState.MAINMENU:
                 MainMenuLoad();
                 break;
-            case MenuEnums.OPTIONSMENU:
+            case MenuState.OPTIONSMENU:
                 OptionsMenuLoad();
                 break;
             default:
@@ -103,10 +125,10 @@ public class BuildMenu : MonoBehaviour {
         btnPosition.y += menuButton.GetComponent<RectTransform>().rect.height;
 
         buttons.Clear();
-        buttons.Add(InstantiateAdjustObj(menuButton, "New Game", ref btnPosition, "main", panelMain));
-        buttons.Add(InstantiateAdjustObj(menuButton, "Load", ref btnPosition, "main", panelMain));
-        buttons.Add(InstantiateAdjustObj(menuButton, "Options", ref btnPosition, "main", panelMain));
-        buttons.Add(InstantiateAdjustObj(menuButton, "Quit", ref btnPosition, "main", panelMain));
+        buttons.Add(InstantiateAdjustObj(menuButton, NewGame, ref btnPosition, MenuType.MAIN, panelMain));
+        buttons.Add(InstantiateAdjustObj(menuButton, LoadGame, ref btnPosition, MenuType.MAIN, panelMain));
+        buttons.Add(InstantiateAdjustObj(menuButton, OptionsMenu, ref btnPosition, MenuType.MAIN, panelMain));
+        buttons.Add(InstantiateAdjustObj(menuButton, QuitGame, ref btnPosition, MenuType.MAIN, panelMain));
     }
 
 
@@ -194,10 +216,10 @@ public class BuildMenu : MonoBehaviour {
         // Offset function y movement
         btnPosition.y += menuButton.GetComponent<RectTransform>().rect.height;
 
-        InstantiateAdjustObj(menuButton, "Master Volume", ref btnPosition, "options", panelMain);
-        InstantiateAdjustObj(menuButton, "SFX Volume", ref btnPosition, "options", panelMain);
-        InstantiateAdjustObj(menuButton, "Music Volume", ref btnPosition, "options", panelMain);
-        InstantiateAdjustObj(menuButton, "Back", ref btnPosition, "options", panelMain);
+        InstantiateAdjustObj(menuButton, MasterVolume, ref btnPosition, MenuType.OPTIONS, panelMain);
+        InstantiateAdjustObj(menuButton, SFXVolume, ref btnPosition, MenuType.OPTIONS, panelMain);
+        InstantiateAdjustObj(menuButton, MusicVolume, ref btnPosition, MenuType.OPTIONS, panelMain);
+        InstantiateAdjustObj(menuButton, Back, ref btnPosition, MenuType.OPTIONS, panelMain);
     }
 
 
@@ -209,7 +231,7 @@ public class BuildMenu : MonoBehaviour {
     /// <param name="vec">Reference to offset vector</param>
     /// <param name="Parent">The parent of the created GameObject</param>
     /// <returns>The created GameObject</returns>
-    private GameObject InstantiateAdjustObj(GameObject Obj, string DisplayText, ref Vector3 vec, string MenuName = "", GameObject Parent = null)
+    private GameObject InstantiateAdjustObj(GameObject Obj, string DisplayText, ref Vector3 vec, MenuType menuType, GameObject Parent = null)
     {
         GameObject obj = Instantiate(Obj) as GameObject;
         obj.GetComponentInChildren<Text>().text = DisplayText;
@@ -222,11 +244,11 @@ public class BuildMenu : MonoBehaviour {
         if (btn != null)
         {
             // TODO: These should be enums?
-            if (MenuName == "main")
+            if (menuType == MenuType.MAIN)
             {
                 btn.onClick.AddListener(delegate { HandleMainMenuClicks(obj); });
             }
-            else if (MenuName == "options")
+            else if (menuType == MenuType.OPTIONS)
             {
                 btn.onClick.AddListener(delegate { HandleOptionsMenuClicks(obj); });                
             }
