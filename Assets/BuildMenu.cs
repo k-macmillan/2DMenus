@@ -74,6 +74,10 @@ public class BuildMenu : MonoBehaviour {
         panelMain.transform.parent = canvasMain.transform;
     }
 
+
+    /// <summary>
+    /// Loads the Main Menu and associated buttons.
+    /// </summary>
     public void MainMenuLoad()
     {
         LoadCanvasPanel();
@@ -100,12 +104,19 @@ public class BuildMenu : MonoBehaviour {
         InstantiateAdjustObj(menuButton, "Options", ref btnPosition, panelMain);
         InstantiateAdjustObj(menuButton, "Quit", ref btnPosition, panelMain);
     }
-    
 
-    private GameObject InstantiateAdjustObj(GameObject Obj, string Name, ref Vector3 vec, GameObject Parent = null)
+    /// <summary>
+    /// Used for instantiating and offsetting an Object.
+    /// </summary>
+    /// <param name="Obj">GameObject to be cloned</param>
+    /// <param name="DisplayText">Display text</param>
+    /// <param name="vec">Reference to offset vector</param>
+    /// <param name="Parent">The parent of the created GameObject</param>
+    /// <returns>The created GameObject</returns>
+    private GameObject InstantiateAdjustObj(GameObject Obj, string DisplayText, ref Vector3 vec, GameObject Parent = null)
     {
         GameObject obj = Instantiate(Obj) as GameObject;
-        obj.GetComponentInChildren<Text>().text = Name;
+        obj.GetComponentInChildren<Text>().text = DisplayText;
         obj.transform.parent = Parent.transform;
         vec.y -= obj.GetComponent<RectTransform>().rect.height;
         obj.transform.position = vec;
