@@ -62,8 +62,13 @@ public class BuildMenu : MonoBehaviour {
         
     }
 
+    /// <summary>
+    /// Cleans then loads a new canvas and panel for use with menus.
+    /// </summary>
     public void LoadCanvasPanel()
     {
+        Destroy(canvasMain);
+        Destroy(panelMain);
         canvasMain = Instantiate(canvas);
         panelMain = Instantiate(panel);
         panelMain.transform.parent = canvasMain.transform;
