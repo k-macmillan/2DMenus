@@ -212,8 +212,6 @@ public class BuildMenu : MonoBehaviour {
         RectTransform lblRect = label.GetComponent<RectTransform>();
         RectTransform sliderRect = slider.GetComponent<RectTransform>();
         RectTransform btnRect = menuButton.GetComponent<RectTransform>();
-        //float diffWidth = Screen.width / 2.0f - btnRect.rect.width * btnBuffer;
-        //float diffHeight = Screen.height / 2.0f - btnRect.rect.height * btnBuffer * optionsMenuButtonCount;
 
         float diffWidth = Screen.width / 2.0f - sliderRect.rect.width * btnBuffer;
         float diffHeight = Screen.height / 2.0f - (sliderRect.rect.height * sliderBuffer + lblHeight * lblBuffer) * (optionsMenuButtonCount - 1) - btnRect.rect.height * btnBuffer;
