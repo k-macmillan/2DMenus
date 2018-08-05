@@ -18,6 +18,7 @@ public class BuildMenu : MonoBehaviour {
     private GameObject panelMain;
     private MenuSounds menuSounds;
     private EventTrigger eventTrigger = null;
+    private OptionsControllerAudio optionsController;
 
     private const float btnBuffer = 0.60f;
     private const float sliderBuffer = 0.50f;
@@ -205,7 +206,7 @@ public class BuildMenu : MonoBehaviour {
     public void OptionsMenuLoad()
     {
         LoadCanvasPanel();
-        OptionsController optionsController = new OptionsController();
+        optionsController = new OptionsControllerAudio(menuSounds.MusicMixer);
 
         RectTransform panelRect = panelMain.GetComponent<RectTransform>();
         RectTransform lblRect = label.GetComponent<RectTransform>();
@@ -233,12 +234,13 @@ public class BuildMenu : MonoBehaviour {
         // Offset function y movement
         btnPosition.y += (lblHeight + sliderRect.rect.height) / 2.0f;
 
-        InstantiateSlider(slider, strMasterVolume, ref btnPosition, MenuType.OPTIONS, panelMain);
-        InstantiateSlider(slider, strSFXVolume, ref btnPosition, MenuType.OPTIONS, panelMain);
-        InstantiateSlider(slider, strMusicVolume, ref btnPosition, MenuType.OPTIONS, panelMain);
+        GameObject masterVol = InstantiateSlider(slider, strMasterVolume, ref btnPosition, MenuType.OPTIONS, panelMain);
+        GameObject sfxVol = InstantiateSlider(slider, strSFXVolume, ref btnPosition, MenuType.OPTIONS, panelMain);
+        GameObject musicVol = InstantiateSlider(slider, strMusicVolume, ref btnPosition, MenuType.OPTIONS, panelMain);
         btnPosition.y += sliderRect.rect.height / 2.0f;
         InstantiateButton(menuButton, strBack, ref btnPosition, MenuType.OPTIONS, panelMain);
         MenuState = MenuState.OPTIONSMENU;
+        
     }
 
 
@@ -304,11 +306,28 @@ public class BuildMenu : MonoBehaviour {
         obj.transform.SetParent(Parent.transform);
         Vec.y -= obj.GetComponent<RectTransform>().rect.height;
         obj.transform.position = new Vector3(Vec.x - obj.GetComponent<RectTransform>().rect.width / 2.0f, Vec.y, Vec.z);
-        
+
+        Slider objSlider = obj.GetComponentInChildren<Slider>();
+        switch (DisplayText)
+        {
+            case strMasterVolume:
+                objSlider.value = optionsController.MasterVol;
+                break;
+            case strSFXVolume:
+                objSlider.value = optionsController.SFXVol;
+                break;
+            case strMusicVolume:
+                objSlider.value = optionsController.MusicVol;
+                break;
+            default:
+                break;
+        }
+        objSlider.onValueChanged.AddListener(delegate { SliderValueChanged(objSlider); });
+
         //eventTrigger = obj.AddComponent<EventTrigger>();
         //AddEventTrigger(OnPointerEnter, EventTriggerType.);
 
-        
+
 
         return obj;
     }
@@ -334,6 +353,23 @@ public class BuildMenu : MonoBehaviour {
         menuSounds.HoverSoundPlay();
     }
     
+
+
+    private void SliderValueChanged(Slider objSlider)
+    {
+        switch (objSlider.name)
+        {
+            case strMasterVolume:
+                optionsController.MasterVol = objSlider.value;
+                break;
+            case strSFXVolume:
+                optionsController.SFXVol = objSlider.value;
+                break;
+            case strMusicVolume:
+                optionsController.MusicVol = objSlider.value;
+                break;
+        }
+    }
 
 }
 

@@ -7,7 +7,7 @@ public class MenuSounds
     private AudioSource backgroundMusic;
     private AudioSource hoverSound;
     private static GameObject gameObject = null;
-    private AudioMixer musicMixer;
+    public AudioMixer MusicMixer { get; set; }
 
     private const string strMusicMixer = "Music";
     private const string strSFXMixer = "SFX";
@@ -19,7 +19,7 @@ public class MenuSounds
     {
         if (gameObject == null || !backgroundMusic.isPlaying)
         {
-            musicMixer = Resources.Load<AudioMixer>("Audio/MainMixer") as AudioMixer;
+            MusicMixer = Resources.Load<AudioMixer>("Audio/MainMixer") as AudioMixer;
             StartBackgroundMusic();
             PrepareHoverSounds();
         }
@@ -31,7 +31,7 @@ public class MenuSounds
         backgroundMusic = gameObject.AddComponent<AudioSource>();
         backgroundMusic.clip = Resources.Load<AudioClip>(strMusicPath);
 
-        backgroundMusic.outputAudioMixerGroup = musicMixer.FindMatchingGroups(strMusicMixer)[0];
+        backgroundMusic.outputAudioMixerGroup = MusicMixer.FindMatchingGroups(strMusicMixer)[0];
         backgroundMusic.playOnAwake = false;
         backgroundMusic.loop = true;
         backgroundMusic.Play();
@@ -42,7 +42,7 @@ public class MenuSounds
     {
         hoverSound = gameObject.AddComponent<AudioSource>();
         hoverSound.clip = Resources.Load<AudioClip>(strHoverSoundPath);
-        hoverSound.outputAudioMixerGroup = musicMixer.FindMatchingGroups(strSFXMixer)[0];
+        hoverSound.outputAudioMixerGroup = MusicMixer.FindMatchingGroups(strSFXMixer)[0];
         hoverSound.playOnAwake = false;
     }
 
