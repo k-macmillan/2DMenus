@@ -9,6 +9,8 @@ public class BuildMenu : MonoBehaviour {
     public GameObject menuButton;
     public GameObject panel;
     public GameObject canvas;
+    public GameObject slider;
+    public GameObject label;
 
     //private static MenuState menuState = MenuState.NONE;
     private List<GameObject> buttons = new List<GameObject>();
@@ -18,6 +20,9 @@ public class BuildMenu : MonoBehaviour {
     private EventTrigger eventTrigger = null;
 
     private const float btnBuffer = 0.60f;
+    private const float sliderBuffer = 0.50f;
+    private const float lblBuffer = 0.50f;
+    private const float lblHeight = 40.0f;
     private const int mainMenuButtonCount = 4;
     private const int optionsMenuButtonCount = 4;
 
@@ -122,13 +127,13 @@ public class BuildMenu : MonoBehaviour {
         };
 
         // Offset function y movement
-        btnPosition.y += menuButton.GetComponent<RectTransform>().rect.height;
+        btnPosition.y += btnRect.rect.height;
 
         buttons.Clear();
-        buttons.Add(InstantiateAdjustObj(menuButton, strNewGame, ref btnPosition, MenuType.MAIN, panelMain));
-        buttons.Add(InstantiateAdjustObj(menuButton, strLoadGame, ref btnPosition, MenuType.MAIN, panelMain));
-        buttons.Add(InstantiateAdjustObj(menuButton, strOptionsMenu, ref btnPosition, MenuType.MAIN, panelMain));
-        buttons.Add(InstantiateAdjustObj(menuButton, strQuitGame, ref btnPosition, MenuType.MAIN, panelMain));
+        buttons.Add(InstantiateButton(menuButton, strNewGame, ref btnPosition, MenuType.MAIN, panelMain));
+        buttons.Add(InstantiateButton(menuButton, strLoadGame, ref btnPosition, MenuType.MAIN, panelMain));
+        buttons.Add(InstantiateButton(menuButton, strOptionsMenu, ref btnPosition, MenuType.MAIN, panelMain));
+        buttons.Add(InstantiateButton(menuButton, strQuitGame, ref btnPosition, MenuType.MAIN, panelMain));
         MenuState = MenuState.MAINMENU;
     }
 
@@ -200,28 +205,39 @@ public class BuildMenu : MonoBehaviour {
     public void OptionsMenuLoad()
     {
         LoadCanvasPanel();
-        RectTransform panelRect = panelMain.GetComponent<RectTransform>();
-        RectTransform btnRect = menuButton.GetComponent<RectTransform>();
-        float diffWidth = Screen.width / 2.0f - btnRect.rect.width * btnBuffer;
-        float diffHeight = Screen.height / 2.0f - btnRect.rect.height * btnBuffer * optionsMenuButtonCount;
+        OptionsController optionsController = new OptionsController();
 
+        RectTransform panelRect = panelMain.GetComponent<RectTransform>();
+        RectTransform lblRect = label.GetComponent<RectTransform>();
+        RectTransform sliderRect = slider.GetComponent<RectTransform>();
+        RectTransform btnRect = menuButton.GetComponent<RectTransform>();
+        //float diffWidth = Screen.width / 2.0f - btnRect.rect.width * btnBuffer;
+        //float diffHeight = Screen.height / 2.0f - btnRect.rect.height * btnBuffer * optionsMenuButtonCount;
+
+        float diffWidth = Screen.width / 2.0f - sliderRect.rect.width * btnBuffer;
+        float diffHeight = Screen.height / 2.0f - (sliderRect.rect.height * sliderBuffer + lblHeight * lblBuffer) * (optionsMenuButtonCount - 1) - btnRect.rect.height * btnBuffer;
+        
         panelRect.offsetMin = new Vector2(diffWidth, diffHeight);
         panelRect.offsetMax = new Vector2(-diffWidth, -diffHeight);
+
+        float sliderOffset = (optionsMenuButtonCount - 1) * (sliderRect.rect.height + lblHeight);
+        float btnOffset = btnRect.rect.height * btnBuffer;
 
         Vector3 btnPosition = new Vector3
         {
             x = panelMain.transform.position.x,
-            y = panelMain.transform.position.y + optionsMenuButtonCount / 2.0f * btnRect.rect.height - btnRect.rect.height / 2.0f,
+            y = panelMain.transform.position.y + (sliderOffset + btnOffset) / 2.0f,
             z = panelMain.transform.position.z
         };
 
         // Offset function y movement
-        btnPosition.y += menuButton.GetComponent<RectTransform>().rect.height;
+        btnPosition.y += (lblHeight + sliderRect.rect.height) / 2.0f;
 
-        InstantiateAdjustObj(menuButton, strMasterVolume, ref btnPosition, MenuType.OPTIONS, panelMain);
-        InstantiateAdjustObj(menuButton, strSFXVolume, ref btnPosition, MenuType.OPTIONS, panelMain);
-        InstantiateAdjustObj(menuButton, strMusicVolume, ref btnPosition, MenuType.OPTIONS, panelMain);
-        InstantiateAdjustObj(menuButton, strBack, ref btnPosition, MenuType.OPTIONS, panelMain);
+        InstantiateSlider(slider, strMasterVolume, ref btnPosition, MenuType.OPTIONS, panelMain);
+        InstantiateSlider(slider, strSFXVolume, ref btnPosition, MenuType.OPTIONS, panelMain);
+        InstantiateSlider(slider, strMusicVolume, ref btnPosition, MenuType.OPTIONS, panelMain);
+        btnPosition.y += sliderRect.rect.height / 2.0f;
+        InstantiateButton(menuButton, strBack, ref btnPosition, MenuType.OPTIONS, panelMain);
         MenuState = MenuState.OPTIONSMENU;
     }
 
@@ -234,14 +250,14 @@ public class BuildMenu : MonoBehaviour {
     /// <param name="vec">Reference to offset vector</param>
     /// <param name="Parent">The parent of the created GameObject</param>
     /// <returns>The created GameObject</returns>
-    private GameObject InstantiateAdjustObj(GameObject Obj, string DisplayText, ref Vector3 Vec, MenuType MenuType, GameObject Parent = null)
+    private GameObject InstantiateButton(GameObject Obj, string DisplayText, ref Vector3 Vec, MenuType MenuType, GameObject Parent = null)
     {
         GameObject obj = Instantiate(Obj) as GameObject;
         obj.GetComponentInChildren<Text>().text = DisplayText;
         obj.name = DisplayText;
         obj.transform.SetParent(Parent.transform);
         Vec.y -= obj.GetComponent<RectTransform>().rect.height;
-        obj.transform.position = Vec;
+        obj.transform.position = new Vector3(Vec.x, Vec.y, Vec.z);
 
         Button btn = obj.GetComponent<Button>();
         eventTrigger = obj.AddComponent<EventTrigger>();
@@ -249,7 +265,6 @@ public class BuildMenu : MonoBehaviour {
 
         if (btn != null)
         {
-            // TODO: These should be enums?
             if (MenuType == MenuType.MAIN)
             {
                 btn.onClick.AddListener(delegate { HandleMainMenuClicks(obj); });
@@ -259,6 +274,41 @@ public class BuildMenu : MonoBehaviour {
                 btn.onClick.AddListener(delegate { HandleOptionsMenuClicks(obj); });                
             }
         }
+
+        return obj;
+    }
+
+
+    /// <summary>
+    /// Used for instantiating and offsetting an Object.
+    /// </summary>
+    /// <param name="Obj">GameObject to be cloned</param>
+    /// <param name="DisplayText">Display text</param>
+    /// <param name="vec">Reference to offset vector</param>
+    /// <param name="Parent">The parent of the created GameObject</param>
+    /// <returns>The created GameObject</returns>
+    private GameObject InstantiateSlider(GameObject Obj, string DisplayText, ref Vector3 Vec, MenuType MenuType, GameObject Parent = null)
+    {
+        GameObject lbl = Instantiate(label) as GameObject;
+        lbl.name = "Label " + DisplayText;
+        Text txt = lbl.GetComponent<Text>();
+        txt.text = DisplayText;
+
+        lbl.transform.SetParent(Parent.transform);
+        Vec.y -= lblHeight;
+        lbl.transform.position = new Vector3(Vec.x, Vec.y, Vec.z);
+
+
+        GameObject obj = Instantiate(Obj) as GameObject;
+        obj.name = DisplayText;
+        obj.transform.SetParent(Parent.transform);
+        Vec.y -= obj.GetComponent<RectTransform>().rect.height;
+        obj.transform.position = new Vector3(Vec.x - obj.GetComponent<RectTransform>().rect.width / 2.0f, Vec.y, Vec.z);
+        
+        //eventTrigger = obj.AddComponent<EventTrigger>();
+        //AddEventTrigger(OnPointerEnter, EventTriggerType.);
+
+        
 
         return obj;
     }

@@ -6,7 +6,7 @@ public class MenuSounds
 
     private AudioSource backgroundMusic;
     private AudioSource hoverSound;
-    private GameObject gameObject = null;
+    private static GameObject gameObject = null;
     private AudioMixer musicMixer;
 
     private const string strMusicMixer = "Music";
