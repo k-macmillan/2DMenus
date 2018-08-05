@@ -17,12 +17,13 @@ public class BuildMainMenu
     private const string strLoadGame = "Load";
     private const string strOptionsMenu = "Options";
     private const string strQuitGame = "Quit";
-    private const string strButtonPrefab = "Prefabs/SF Button";
-    private const int mainMenuButtonCount = 4;
+    private const string strButtonPrefab = "Prefabs/SF Button";    
     private const float btnBuffer = 0.60f;
+    private const int mainMenuButtonCount = 4;
 
     private GameObject buttonPrefab;
     private EventTrigger eventTrigger;
+    private BuildOptionsMenu buildOptionsMenu;
 
 
     /// <summary>
@@ -134,9 +135,10 @@ public class BuildMainMenu
     /// <param name="obj">The object that requires an interaction</param>
     private void HandleMainMenuClicks(GameObject obj)
     {
+        EventSystem.current.SetSelectedGameObject(null);
         //menuSounds.HoverSoundPlay();
         switch (obj.name)
-        {
+        {            
             case strNewGame:
                 Debug.Log("GOT New Game!");
                 break;
@@ -145,6 +147,16 @@ public class BuildMainMenu
                 break;
             case strOptionsMenu:
                 Debug.Log("GOT Options!");
+                if (buildOptionsMenu == null)
+                {
+                    ShowMenu(false);
+                    buildOptionsMenu = new BuildOptionsMenu(menuSounds, this);
+                }
+                else
+                {
+                    ShowMenu(false);
+                    buildOptionsMenu.ShowMenu(true);                    
+                }
                 //OptionsMenuLoad();
                 break;
             case strQuitGame:
@@ -158,6 +170,7 @@ public class BuildMainMenu
             default:
                 break;
         }
+        EventSystem.current.SetSelectedGameObject(null);
     }
 
     public void ShowMenu(bool value)
