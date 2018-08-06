@@ -30,16 +30,16 @@ public class BuildOptionsMenu {
 
     private EventTrigger eventTrigger = null;
     private OptionsControllerAudio optionsController;
-    private BuildMainMenu buildMainMenu;
+    private CanvasPanel parentMenu;
 
     public GameObject labelPrefab;
     public GameObject sliderPrefab;
     public GameObject buttonPrefab;
 
-    public BuildOptionsMenu(MenuSounds MenuSounds, BuildMainMenu BuildMainMenu)
+    public BuildOptionsMenu(MenuSounds MenuSounds, CanvasPanel ParentMenu)
     {
         eventTrigger = null;
-        buildMainMenu = BuildMainMenu;
+        parentMenu = ParentMenu;
         menuSounds = MenuSounds;
         menuSounds.StartMenuSounds();
         canvasPanel = new CanvasPanel();
@@ -176,7 +176,7 @@ public class BuildOptionsMenu {
     private void HandleMainMenuClicks()
     {
         canvasPanel.ShowCanvas(false);
-        buildMainMenu.ShowMenu(true);
+        parentMenu.ShowCanvas(true);
     }
 
     // https://answers.unity.com/questions/781726/how-do-i-add-a-listener-to-onpointerenter-ugui.html
