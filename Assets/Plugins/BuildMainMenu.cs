@@ -63,7 +63,8 @@ public class BuildMainMenu : BaseMenu
         // Offset function y movement
         Vector3 offset = new Vector3(0.0f, -btnRect.rect.height, 0.0f);
         btnPosition -= offset;
-        InstantiateButton(buttonPrefab, strNewGame, canvasPanel.MenuPanel, ref btnPosition, offset);
+
+        InstantiateButton(buttonPrefab, strNewGame, canvasPanel.MenuPanel, ref btnPosition, offset);        
         InstantiateButton(buttonPrefab, strLoadGame, canvasPanel.MenuPanel, ref btnPosition, offset);
         InstantiateButton(buttonPrefab, strOptionsMenu, canvasPanel.MenuPanel, ref btnPosition, offset);
         InstantiateButton(buttonPrefab, strQuitGame, canvasPanel.MenuPanel, ref btnPosition, offset);
@@ -75,7 +76,7 @@ public class BuildMainMenu : BaseMenu
     /// <summary>
     /// Overriden OnPointerEnter function used to play a sound.
     /// </summary>
-    private void OnPointerEnter()
+    protected override void OnPointerEnter()
     {
         menuSounds.HoverSoundPlay();
     }

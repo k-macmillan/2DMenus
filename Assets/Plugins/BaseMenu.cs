@@ -6,8 +6,9 @@ using UnityEngine.EventSystems;
 public abstract class BaseMenu {
 
     private CanvasPanel canvasPanel;
-    private EventTrigger eventTrigger;
-
+    public BaseMenu reference;
+    protected EventTrigger eventTrigger;
+    
     public BaseMenu()
     {
         eventTrigger = null;
@@ -39,7 +40,7 @@ public abstract class BaseMenu {
     /// <param name="vec">Reference to offset vector</param>
     /// <param name="Parent">The parent of the created GameObject</param>
     /// <returns>The created GameObject</returns>
-    private GameObject InstantiateObject(GameObject ObjToInstantiate, string Name, GameObject Parent, bool clickable = false)
+    protected GameObject InstantiateObject(GameObject ObjToInstantiate, string Name, GameObject Parent, bool clickable = false)
     {
         GameObject obj = Object.Instantiate(ObjToInstantiate) as GameObject;
         obj.name = Name;
@@ -64,13 +65,16 @@ public abstract class BaseMenu {
     /// <param name="Parent">Parent to attach this to</param>
     /// <param name="Position">Position to place the button</param>
     /// <param name="Offset">Offset to set after the button has been set</param>
-    protected void InstantiateButton(GameObject ObjToInstantiate, string DisplayText, GameObject Parent, ref Vector3 Position, Vector3 Offset = new Vector3())
+    protected GameObject InstantiateButton(GameObject ObjToInstantiate, string DisplayText, GameObject Parent, ref Vector3 Position, Vector3 Offset = new Vector3())
     {
         Position += Offset;
         GameObject obj = Object.Instantiate(ObjToInstantiate) as GameObject;
         obj.name = DisplayText;
         obj.transform.SetParent(Parent.transform);
         SetupButton(obj, Position, DisplayText);
+        eventTrigger = obj.AddComponent<EventTrigger>();
+        AddEventTrigger(OnPointerEnter, EventTriggerType.PointerEnter);
+        return obj;
     }
 
 
@@ -80,7 +84,7 @@ public abstract class BaseMenu {
     /// </summary>
     /// <param name="action">The action to perform</param>
     /// <param name="triggerType">The trigger type</param>
-    protected void AddEventTrigger(UnityAction action, EventTriggerType triggerType)
+    private void AddEventTrigger(UnityAction action, EventTriggerType triggerType)
     {
         // Create a new TriggerEvent and add a listener
         EventTrigger.TriggerEvent trigger = new EventTrigger.TriggerEvent();
@@ -94,7 +98,7 @@ public abstract class BaseMenu {
     }
 
 
-    protected void SetupButton(GameObject obj, Vector3 Location, string DisplayText)
+    private void SetupButton(GameObject obj, Vector3 Location, string DisplayText)
     {
         Button btn = obj.GetComponent<Button>() as Button;
         // A little check never hurt anyone
@@ -110,4 +114,9 @@ public abstract class BaseMenu {
         obj.transform.position = Location;
         btn.onClick.AddListener(delegate { HandleMenuClicks(obj); });        
     }
+
+    /// <summary>
+    /// Overriden OnPointerEnter function used to play a sound.
+    /// </summary>
+    protected virtual void OnPointerEnter() { }
 }
