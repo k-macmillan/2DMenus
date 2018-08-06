@@ -170,11 +170,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bfda8d2357a57f840b23d84a852d0a8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  menuButton: {fileID: 100004, guid: 05a81c3d5091440058129444d28322f3, type: 2}
-  panel: {fileID: 1031035349340626, guid: d40f278790d440a44bfc8b96cedf7e3c, type: 2}
-  canvas: {fileID: 1466067571290012, guid: 709c0f8b9ccba254db04d4a9c641ef89, type: 2}
-  slider: {fileID: 1972722471033376, guid: 9ff5eb76593367244b7a2efc1b4b4522, type: 2}
-  label: {fileID: 1970580373071104, guid: 3c6fce5972653ad49a8f8d8f6bdb2230, type: 2}
 --- !u!1 &1915612947
 GameObject:
   m_ObjectHideFlags: 0

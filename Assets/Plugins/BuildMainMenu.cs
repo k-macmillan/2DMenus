@@ -6,7 +6,7 @@ public class BuildMainMenu : BaseMenu
 
     // Helper classes
     private MenuSounds menuSounds;
-    private CanvasPanel canvasPanel;
+    //private CanvasPanel canvasPanel;
 
 
     // Const variables
@@ -109,7 +109,8 @@ public class BuildMainMenu : BaseMenu
                 else
                 {
                     SetActive(false);
-                    buildOptionsMenu.ShowMenu(true);
+                    //buildOptionsMenu.ShowMenu(true);
+                    buildOptionsMenu.SetActive(true);
                 }
                 //OptionsMenuLoad();
                 break;

@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 
 public abstract class BaseMenu {
 
-    private CanvasPanel canvasPanel;
+    protected CanvasPanel canvasPanel;
     public BaseMenu reference;
     protected EventTrigger eventTrigger;
     

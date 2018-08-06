@@ -3,18 +3,19 @@ using UnityEngine.UI;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
-public class BuildOptionsMenu {
+public class BuildOptionsMenu : BaseMenu {
 
     // Helper classes
     private MenuSounds menuSounds;
-    private CanvasPanel canvasPanel;
+    //private CanvasPanel canvasPanel;
 
     // Constants
 
     // Prefabs
     private const string strLabelPrefab = "Prefabs/Label";
-    private const string strSliderPrefab = "Prefabs/SFSlider";
+    private const string strSliderPrefab = "Prefabs/SliderVolume";
     private const string strButtonPrefab = "Prefabs/SF Button";
+    private const string strLabelName = "Label";
 
     // Mixer
     private const string strMasterVolume = "Master Volume";
@@ -25,16 +26,15 @@ public class BuildOptionsMenu {
     private const float btnBuffer = 0.60f;
     private const float sliderBuffer = 0.50f;
     private const float lblBuffer = 0.50f;
-    private const float lblHeight = 40.0f;
+    private const float lblHeight = 42.5f;
     private const int optionsMenuButtonCount = 4;
 
-    private EventTrigger eventTrigger = null;
     private OptionsControllerAudio optionsController;
     private CanvasPanel parentMenu;
 
-    public GameObject labelPrefab;
-    public GameObject sliderPrefab;
-    public GameObject buttonPrefab;
+    private GameObject sliderPrefab;
+    private GameObject buttonPrefab;
+
 
     public BuildOptionsMenu(MenuSounds MenuSounds, CanvasPanel ParentMenu)
     {
@@ -44,7 +44,6 @@ public class BuildOptionsMenu {
         menuSounds.StartMenuSounds();
         canvasPanel = new CanvasPanel();
 
-        labelPrefab = Resources.Load<GameObject>(strLabelPrefab);
         sliderPrefab = Resources.Load<GameObject>(strSliderPrefab);
         buttonPrefab = Resources.Load<GameObject>(strButtonPrefab);
 
@@ -65,11 +64,12 @@ public class BuildOptionsMenu {
 
         float diffWidth = Screen.width / 2.0f - sliderRect.rect.width * btnBuffer;
         float diffHeight = Screen.height / 2.0f - (sliderRect.rect.height * sliderBuffer + lblHeight * lblBuffer) * (optionsMenuButtonCount - 1) - btnRect.rect.height * btnBuffer;
+        float sliderHeight = sliderRect.rect.height + lblHeight;
 
         panelRect.offsetMin = new Vector2(diffWidth, diffHeight);
         panelRect.offsetMax = new Vector2(-diffWidth, -diffHeight);
 
-        float sliderOffset = (optionsMenuButtonCount - 1) * (sliderRect.rect.height + lblHeight);
+        float sliderOffset = (optionsMenuButtonCount - 1) * (sliderHeight);
         float btnOffset = btnRect.rect.height * btnBuffer;
 
         Vector3 btnPosition = new Vector3
@@ -80,150 +80,90 @@ public class BuildOptionsMenu {
         };
 
         // Offset function y movement
-        btnPosition.y += (lblHeight + sliderRect.rect.height) / 2.0f;
+        btnPosition.y += (sliderHeight) / 2.0f;
+        Vector3 offset = new Vector3(0.0f, -(sliderHeight), 0.0f);
 
-        InstantiateSlider(sliderPrefab, strMasterVolume, ref btnPosition, canvasPanel.MenuPanel);
-        InstantiateSlider(sliderPrefab, strSFXVolume, ref btnPosition, canvasPanel.MenuPanel);
-        InstantiateSlider(sliderPrefab, strMusicVolume, ref btnPosition, canvasPanel.MenuPanel);
-        btnPosition.y += sliderRect.rect.height / 2.0f;
-        InstantiateButton(buttonPrefab, strBack, ref btnPosition, canvasPanel.MenuPanel);
+        InstantiateSlider(sliderPrefab, strMasterVolume, ref btnPosition, offset, canvasPanel.MenuPanel);
+        InstantiateSlider(sliderPrefab, strSFXVolume, ref btnPosition, offset, canvasPanel.MenuPanel);
+        InstantiateSlider(sliderPrefab, strMusicVolume, ref btnPosition, offset, canvasPanel.MenuPanel);
+        offset.y = -(sliderRect.rect.height / 2.0f + btnRect.rect.height / 2.0f);
+        InstantiateButton(buttonPrefab, strBack, canvasPanel.MenuPanel, ref btnPosition, offset);
 
     }
 
 
     /// <summary>
-    /// Used for instantiating and offsetting an Object.
+    /// Used for instantiating and offsetting a slider object.
     /// </summary>
     /// <param name="Obj">GameObject to be cloned</param>
     /// <param name="DisplayText">Display text</param>
-    /// <param name="vec">Reference to offset vector</param>
+    /// <param name="Position">Starting position</param>
+    /// <param name="Offset">Offset from start to place this slider</param>
     /// <param name="Parent">The parent of the created GameObject</param>
     /// <returns>The created GameObject</returns>
-    private GameObject InstantiateSlider(GameObject Obj, string DisplayText, ref Vector3 Vec, GameObject Parent = null)
+    private GameObject InstantiateSlider(GameObject Obj, string DisplayText, ref Vector3 Position, Vector3 Offset = new Vector3(), GameObject Parent = null)
     {
-        GameObject lbl = Object.Instantiate(labelPrefab) as GameObject;
-        lbl.name = "Label " + DisplayText;
-        Text txt = lbl.GetComponent<Text>();
-        txt.text = DisplayText;
-
-        lbl.transform.SetParent(Parent.transform);
-        Vec.y -= lblHeight;
-        lbl.transform.position = new Vector3(Vec.x, Vec.y, Vec.z);
-
+        Transform lbl = Obj.GetComponentInChildren<Transform>().Find(strLabelName);
+        if (lbl != null)
+        {
+            Text txt = lbl.GetComponentInChildren<Text>();
+            txt.text = DisplayText;
+        }
 
         GameObject obj = Object.Instantiate(Obj) as GameObject;
         obj.name = DisplayText;
         obj.transform.SetParent(Parent.transform);
-        Vec.y -= obj.GetComponent<RectTransform>().rect.height;
-        obj.transform.position = new Vector3(Vec.x - obj.GetComponent<RectTransform>().rect.width / 2.0f, Vec.y, Vec.z);
+        Position += Offset;
+        obj.transform.position = new Vector3(Position.x - obj.GetComponent<RectTransform>().rect.width / 2.0f, Position.y, Position.z);
 
-        Slider objSlider = obj.GetComponentInChildren<Slider>();
-        switch (DisplayText)
-        {
-            case strMasterVolume:
-                objSlider.value = optionsController.MasterVol;
-                break;
-            case strSFXVolume:
-                objSlider.value = optionsController.SFXVol;
-                break;
-            case strMusicVolume:
-                objSlider.value = optionsController.MusicVol;
-                break;
-            default:
-                break;
-        }
-        objSlider.onValueChanged.AddListener(delegate { SliderValueChanged(objSlider); });
-
-        //eventTrigger = obj.AddComponent<EventTrigger>();
-        //AddEventTrigger(OnPointerEnter, EventTriggerType.);
-
-
+        SliderHandler(obj.GetComponentInChildren<Slider>());
 
         return obj;
+
     }
 
 
     /// <summary>
-    /// Used for instantiating and offsetting an Object.
+    /// Override of HandleMenuClicks to handle the back button
     /// </summary>
-    /// <param name="Obj">GameObject to be cloned</param>
-    /// <param name="DisplayText">Display text</param>
-    /// <param name="vec">Reference to offset vector</param>
-    /// <param name="Parent">The parent of the created GameObject</param>
-    /// <returns>The created GameObject</returns>
-    private GameObject InstantiateButton(GameObject Obj, string DisplayText, ref Vector3 Vec, GameObject Parent = null)
+    /// <param name="obj"></param>
+    protected override void HandleMenuClicks(GameObject obj)
     {
-        GameObject obj = Object.Instantiate(Obj) as GameObject;
-        obj.GetComponentInChildren<Text>().text = DisplayText;
-        obj.name = DisplayText;
-        obj.transform.SetParent(Parent.transform);
-        Vec.y -= obj.GetComponent<RectTransform>().rect.height;
-        obj.transform.position = new Vector3(Vec.x, Vec.y, Vec.z);
-
-        Button btn = obj.GetComponent<Button>();
-        eventTrigger = obj.AddComponent<EventTrigger>();
-        AddEventTrigger(OnPointerEnter, EventTriggerType.PointerEnter);
-
-        if (btn != null)
-        {
-            btn.onClick.AddListener(HandleMainMenuClicks);
-        }
-
-        return obj;
-    }
-
-    private void HandleMainMenuClicks()
-    {
+        // Only button is the back button...so...
         canvasPanel.ShowCanvas(false);
         parentMenu.ShowCanvas(true);
     }
 
-    // https://answers.unity.com/questions/781726/how-do-i-add-a-listener-to-onpointerenter-ugui.html
-    /// <summary>
-    /// Custom function to add event triggers to an object.
-    /// </summary>
-    /// <param name="action">The action to perform</param>
-    /// <param name="triggerType">The trigger type</param>
-    private void AddEventTrigger(UnityAction action, EventTriggerType triggerType)
-    {
-        // Create a new TriggerEvent and add a listener
-        EventTrigger.TriggerEvent trigger = new EventTrigger.TriggerEvent();
-        trigger.AddListener((eventData) => action()); // you can capture and pass the event data to the listener
 
-        // Create and initialise EventTrigger.Entry using the created TriggerEvent
-        EventTrigger.Entry entry = new EventTrigger.Entry() { callback = trigger, eventID = triggerType };
-
-        // Add the EventTrigger.Entry to delegates list on the EventTrigger
-        eventTrigger.triggers.Add(entry);
-    }
 
     /// <summary>
     /// Overriden OnPointerEnter function used to play a sound.
     /// </summary>
-    private void OnPointerEnter()
+    protected override void OnPointerEnter()
     {
         menuSounds.HoverSoundPlay();
     }
 
 
-    private void SliderValueChanged(Slider objSlider)
+    private void SliderHandler(Slider objSlider)
     {
         switch (objSlider.name)
         {
             case strMasterVolume:
-                optionsController.MasterVol = objSlider.value;
+                objSlider.value = optionsController.MasterVol;
+                objSlider.onValueChanged.AddListener(delegate { optionsController.MasterVol = objSlider.value; });
                 break;
             case strSFXVolume:
-                optionsController.SFXVol = objSlider.value;
+                objSlider.value = optionsController.SFXVol;
+                objSlider.onValueChanged.AddListener(delegate { optionsController.SFXVol = objSlider.value; });
                 break;
             case strMusicVolume:
-                optionsController.MusicVol = objSlider.value;
+                objSlider.value = optionsController.MusicVol;
+                objSlider.onValueChanged.AddListener(delegate { optionsController.MusicVol = objSlider.value; });
+                break;
+            default:
                 break;
         }
     }
-
-    public void ShowMenu(bool value)
-    {
-        canvasPanel.ShowCanvas(value);
-    }
+    
 }
