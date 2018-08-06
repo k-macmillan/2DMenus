@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 public class BuildSaveLoadMenu : BaseMenu {
 
@@ -10,11 +11,13 @@ public class BuildSaveLoadMenu : BaseMenu {
     // Prefabs
     private const string strButtonPrefab = "Prefabs/SF Button";
     private const string strSaveLoadPrefab = "Prefabs/SaveLoadPanel";
-
+    
 
     private const string strBack = "Back";
+    private const string strSaveLoadButton = "SaveLoadGame";
+    private const string strDeleteButton = "DeleteSave";
     private const float btnBuffer = 0.60f;
-    //private const float btnBuffer = 0.70f;
+    private const float saveLoadBuffer = 0.90f;
 
     private const int saveLoadSlots = 3;
 
@@ -47,21 +50,21 @@ public class BuildSaveLoadMenu : BaseMenu {
 
         float saveLoadHeight = saveLoadRect.rect.height;
         float btnHeight = btnRect.rect.height;
-        float diffWidth = 0;// Screen.width / 2.0f ;
-        float diffHeight = (Screen.height - (saveLoadHeight * saveLoadSlots  + btnHeight)) / 2.0f;
+        float diffWidth = 0;
+        float diffHeight = (Screen.height - (saveLoadHeight * (saveLoadSlots + 1) * saveLoadBuffer)) / 2.0f;  // +1 for the button slot
 
         panelRect.offsetMin = new Vector2(diffWidth, diffHeight);
         panelRect.offsetMax = new Vector2(-diffWidth, -diffHeight);
 
         Vector3 objPosition = canvasPanel.MenuPanel.transform.position;
-        objPosition.y += (saveLoadHeight * saveLoadSlots + btnHeight * btnBuffer) / 2.0f;
-        Vector3 offset = new Vector3(0.0f, -(saveLoadHeight - btnHeight * btnBuffer) / 2.0f, 0.0f);
+        objPosition.y += (saveLoadHeight * saveLoadSlots) / 2.0f - btnHeight * btnBuffer;
+        Vector3 offset = new Vector3(0.0f, -saveLoadHeight, 0.0f);
         
 
-        InstantiateSaveLoad(saveLoadPrefab, "save0", canvasPanel.MenuPanel, ref objPosition, offset);
-        offset.y = -saveLoadHeight;
+        InstantiateSaveLoad(saveLoadPrefab, "save0", canvasPanel.MenuPanel, ref objPosition);        
         InstantiateSaveLoad(saveLoadPrefab, "save1", canvasPanel.MenuPanel, ref objPosition, offset);
         InstantiateSaveLoad(saveLoadPrefab, "save2", canvasPanel.MenuPanel, ref objPosition, offset);
+
         offset.y = -(saveLoadHeight / 2.0f + btnRect.rect.height / 2.0f);
         InstantiateButton(buttonPrefab, strBack, canvasPanel.MenuPanel, ref objPosition, offset);
     }
@@ -72,15 +75,45 @@ public class BuildSaveLoadMenu : BaseMenu {
         GameObject obj = Object.Instantiate(ObjToInstantiate, Parent.transform) as GameObject;
         obj.name = DisplayText;
         obj.transform.position = Position;
-        //eventTrigger = obj.AddComponent<EventTrigger>();
-        //AddEventTrigger(OnPointerEnter, EventTriggerType.PointerEnter);
+
+
+        AssignListener(obj, strSaveLoadButton);
+        AssignListener(obj, strDeleteButton);
         return obj;
+    }
+
+    private void AssignListener(GameObject Obj, string Name)
+    {
+        GameObject saveButton = Obj.GetComponentInChildren<Transform>().Find(Name).gameObject as GameObject;
+        if (saveButton != null)
+        {
+            Button btn = saveButton.GetComponent<Button>() as Button;            
+            btn.onClick.AddListener(delegate { HandleMenuClicks(saveButton); });
+        }
     }
 
 
     protected override void HandleMenuClicks(GameObject obj)
     {
-        
+        switch (obj.name)
+        {
+            case strSaveLoadButton:
+                Debug.Log("Game loaded!");
+                canvasPanel.ShowCanvas(false);
+                parentMenu.ShowCanvas(true);
+                break;
+            case strDeleteButton:
+                Debug.Log("Game deleted!");
+                GameObject parent = obj.GetComponentInParent<Transform>().parent.gameObject as GameObject;
+                parent.SetActive(false);
+                break;
+            case strBack:
+                canvasPanel.ShowCanvas(false);
+                parentMenu.ShowCanvas(true);
+                break;
+            default:
+                break;
+        }
     }
 
 }

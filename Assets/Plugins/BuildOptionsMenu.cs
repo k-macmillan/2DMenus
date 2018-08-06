@@ -78,8 +78,8 @@ public class BuildOptionsMenu : BaseMenu {
         };
 
         // Offset function y movement
-        btnPosition.y += (sliderHeight) / 2.0f;
-        Vector3 offset = new Vector3(0.0f, -(sliderHeight), 0.0f);
+        btnPosition.y += sliderHeight / 2.0f;
+        Vector3 offset = new Vector3(0.0f, -sliderHeight, 0.0f);
 
         InstantiateSlider(sliderPrefab, strMasterVolume, ref btnPosition, offset, canvasPanel.MenuPanel);
         InstantiateSlider(sliderPrefab, strSFXVolume, ref btnPosition, offset, canvasPanel.MenuPanel);
