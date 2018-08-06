@@ -1,9 +1,9 @@
 # 2DMenus
-An exploration into generating programmatic 2D menus in Unity
+An exploration into using code to genereate 2D menus in Unity.
 
 # Description
 I've wanted to make a game involving VR for a while and I have zero experience in game dev. The game I want to do involves
-procedurally generated objects and so it was necessary to look into generating objects programmatically in my game engine of choice. 
+procedurally generated objects and so it was necessary to look into generating objects **programmatically** in my game engine of choice. 
 There were two main suggestions: Unity and Unreal Engine 4. Unity was chosen because most reviews suggested it for those new to game dev
 and there is substantial documentation online.
 
