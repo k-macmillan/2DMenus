@@ -9,8 +9,8 @@ public class BuildMenu : MonoBehaviour {
     
     private void Awake()
     {
-        //menuSounds = new MenuSounds();
-        //buildMainMenu = new BuildMainMenu(menuSounds);
+        menuSounds = new MenuSounds();
+        buildMainMenu = new BuildMainMenu(menuSounds);
     }
     
 }

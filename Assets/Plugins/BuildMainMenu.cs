@@ -22,6 +22,7 @@ public class BuildMainMenu : BaseMenu
     private GameObject buttonPrefab;
     
     private BuildOptionsMenu buildOptionsMenu;
+    private BuildSaveLoadMenu buildSaveLoadMenu;
 
 
     /// <summary>
@@ -97,19 +98,27 @@ public class BuildMainMenu : BaseMenu
                 Debug.Log("GOT New Game!");
                 break;
             case strLoadGame:
+                SetActive(false);
+                if (buildSaveLoadMenu == null)
+                {
+                    buildSaveLoadMenu = new BuildSaveLoadMenu(menuSounds, canvasPanel);
+                }
+                else
+                {
+                    buildSaveLoadMenu.SetActive(true);
+                }
+                
                 Debug.Log("GOT Load!");
                 break;
             case strOptionsMenu:
                 Debug.Log("GOT Options!");
+                SetActive(false);
                 if (buildOptionsMenu == null)
                 {
-                    SetActive(false);
                     buildOptionsMenu = new BuildOptionsMenu(menuSounds, canvasPanel);
                 }
                 else
-                {
-                    SetActive(false);
-                    //buildOptionsMenu.ShowMenu(true);
+                {                    
                     buildOptionsMenu.SetActive(true);
                 }
                 //OptionsMenuLoad();
