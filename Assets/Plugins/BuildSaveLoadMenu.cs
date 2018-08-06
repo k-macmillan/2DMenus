@@ -12,7 +12,6 @@ public class BuildSaveLoadMenu : BaseMenu {
     private const string strButtonPrefab = "Prefabs/SF Button";
     private const string strSaveLoadPrefab = "Prefabs/SaveLoadPanel";
     
-
     private const string strBack = "Back";
     private const string strSaveLoadButton = "SaveLoadGame";
     private const string strDeleteButton = "DeleteSave";
@@ -36,6 +35,7 @@ public class BuildSaveLoadMenu : BaseMenu {
 
         buttonPrefab = Resources.Load<GameObject>(strButtonPrefab);
         saveLoadPrefab = Resources.Load<GameObject>(strSaveLoadPrefab);
+        
 
         LoadSaveLoadMenu();
     }
@@ -61,9 +61,9 @@ public class BuildSaveLoadMenu : BaseMenu {
         Vector3 offset = new Vector3(0.0f, -saveLoadHeight, 0.0f);
         
 
-        InstantiateSaveLoad(saveLoadPrefab, "save0", canvasPanel.MenuPanel, ref objPosition);        
-        InstantiateSaveLoad(saveLoadPrefab, "save1", canvasPanel.MenuPanel, ref objPosition, offset);
-        InstantiateSaveLoad(saveLoadPrefab, "save2", canvasPanel.MenuPanel, ref objPosition, offset);
+        InstantiateSaveLoad(saveLoadPrefab, "0", canvasPanel.MenuPanel, ref objPosition);        
+        InstantiateSaveLoad(saveLoadPrefab, "1", canvasPanel.MenuPanel, ref objPosition, offset);
+        InstantiateSaveLoad(saveLoadPrefab, "2", canvasPanel.MenuPanel, ref objPosition, offset);
 
         offset.y = -(saveLoadHeight / 2.0f + btnRect.rect.height / 2.0f);
         InstantiateButton(buttonPrefab, strBack, canvasPanel.MenuPanel, ref objPosition, offset);
@@ -76,7 +76,11 @@ public class BuildSaveLoadMenu : BaseMenu {
         obj.name = DisplayText;
         obj.transform.position = Position;
 
-
+        GameObject screenshot = obj.GetComponentInChildren<Transform>().Find("Screenshot").gameObject as GameObject;
+        RawImage img = screenshot.GetComponentInChildren<RawImage>();
+        Texture image = Resources.Load<Texture>("Images/example" + obj.name);
+        img.texture = image;
+        
         AssignListener(obj, strSaveLoadButton);
         AssignListener(obj, strDeleteButton);
         return obj;
