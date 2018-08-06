@@ -7,12 +7,10 @@ public class BuildOptionsMenu : BaseMenu {
 
     // Helper classes
     private MenuSounds menuSounds;
-    //private CanvasPanel canvasPanel;
 
     // Constants
 
     // Prefabs
-    private const string strLabelPrefab = "Prefabs/Label";
     private const string strSliderPrefab = "Prefabs/SliderVolume";
     private const string strButtonPrefab = "Prefabs/SF Button";
     private const string strLabelName = "Label";
