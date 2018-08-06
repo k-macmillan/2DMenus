@@ -59,7 +59,9 @@ public abstract class BaseMenu {
     /// <summary>
     /// Creates a Button prefab then sets the positioning and text for the button
     /// </summary>
+    /// <param name="ObjToInstantiate">Prefab that is being instantiated</param>
     /// <param name="DisplayText">Text to display on the button</param>
+    /// <param name="Parent">Parent to attach this to</param>
     /// <param name="Position">Position to place the button</param>
     /// <param name="Offset">Offset to set after the button has been set</param>
     protected void InstantiateButton(GameObject ObjToInstantiate, string DisplayText, GameObject Parent, ref Vector3 Position, Vector3 Offset = new Vector3())

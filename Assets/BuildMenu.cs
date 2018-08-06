@@ -3,8 +3,6 @@ using UnityEngine;
 
 public class BuildMenu : MonoBehaviour {
 
-    private List<GameObject> buttons = new List<GameObject>();
-
     private MenuSounds menuSounds;
     private BuildMainMenu buildMainMenu;    
     

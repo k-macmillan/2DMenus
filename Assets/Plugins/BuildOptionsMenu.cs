@@ -60,7 +60,6 @@ public class BuildOptionsMenu {
         optionsController = new OptionsControllerAudio(menuSounds.MusicMixer);
 
         RectTransform panelRect = canvasPanel.MenuPanel.GetComponent<RectTransform>();
-        RectTransform lblRect = labelPrefab.GetComponent<RectTransform>();
         RectTransform sliderRect = sliderPrefab.GetComponent<RectTransform>();
         RectTransform btnRect = buttonPrefab.GetComponent<RectTransform>();
 
