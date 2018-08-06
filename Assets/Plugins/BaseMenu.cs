@@ -18,7 +18,7 @@ public abstract class BaseMenu {
     /// <summary>
     /// Handler for clicks in this menu
     /// </summary>
-    /// <param name="obj"></param>
+    /// <param name="obj">Object in need of handling</param>
     abstract protected void HandleMenuClicks(GameObject obj);
 
 
