@@ -17,11 +17,12 @@ generated objects.
 
 ![Options Menu](screenshots/OptionsMenu.png "Options Menu")
 
+![Load Screen]( "Load Screen")
+
 # Current Capabilities
 On the main menu you can go to the options menu or quit. From the options menu you can change any of the sliders and they affect the 
 associated mixer. The back button works to take you back to the main menu. All buttons have a hover sound that plays as well (to test 
-the SFX mixer). There is a background track that plays on loop which is attached to the Music mixer.
+the SFX mixer). There is a background track that plays on loop which is attached to the Music mixer. The Load window loads prefab panels filled with text boxes, an image, and two buttons. The buttons work (logs the click event) and the code is able to load images (screenshots) into the RawImage object.
 
-# Future Goals
-Next is the Load window which would load a game. There is no game to save and therefore no game to load, so this is only going to be the 
-window with buttons showing functionality through Debug.Log().
+# Conclusion
+Fun couple day project to learn some Unity basics and will be a good start towards any future work. 
