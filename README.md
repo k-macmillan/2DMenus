@@ -17,7 +17,7 @@ generated objects.
 
 ![Options Menu](screenshots/OptionsMenu.png "Options Menu")
 
-![Load Screen]( "Load Screen")
+![Load Screen](screenshots/LoadScreen.png "Load Screen")
 
 # Current Capabilities
 On the main menu you can go to the options menu or quit. From the options menu you can change any of the sliders and they affect the 
